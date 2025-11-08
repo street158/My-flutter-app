@@ -7,7 +7,7 @@ jobs:
   build-apk:
     runs-on: ubuntu-latest
     env:
-      FLUTTER_CHANNEL: 'stable'
+      FLUTTER_CHANNEL: 'stable'  # This can remain, but it's overridden by flutter-version
 
     steps:
       - name: Checkout repository
@@ -24,6 +24,7 @@ jobs:
           key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pub-
+      
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -33,7 +34,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: 'stable'
+          flutter-version: '3.7.0'  # Replace with the latest Flutter stable version
           channel: ${{ env.FLUTTER_CHANNEL }}
 
       - name: Flutter -- version
@@ -43,10 +44,10 @@ jobs:
         run: |
           yes | sdkmanager --licenses
           sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2"
+      
       - name: Get Flutter dependencies
         run: flutter pub get
 
-      # Ensure that secrets are available before proceeding
       - name: Prepare keystore (decode from secret)
         run: |
           if [ -n "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" ]; then
